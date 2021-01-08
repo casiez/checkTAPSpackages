@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
      name='checkTAPSpackages',  
-     version='0.1',
+     version='0.2.1',
      scripts=['checkTAPSpackages'] ,
      author="Géry Casiez",
      author_email="gery.casiez@univ-lille.fr",
