@@ -33,6 +33,11 @@ additionnalPackages = ['xkeyval.sty', 'xstring.sty', 'iftex.sty', 'microtype.sty
      'ifluatex.sty', 'trig.sty', 'xcolor.sty', 'ifvtex.sty', 'manyfoot.sty', 'nccfoots.sty', 'ifxetex.sty', 'fontaxes.sty', 'caption3.sty', \
      'comment.sty', 'nameref.sty', 'epstopdf-base.sty', 'upquote.sty', 'gettitlestring.sty']
 
+# Additional packages, not listed above but authorized following discussion with ACM by e-mail
+
+additionalPackagesNotPubliclyListed = ['xspace.sty', 'enumitem.sty'] 
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Check used packages')
@@ -52,6 +57,7 @@ if __name__ == "__main__":
     pattern = re.compile(r"([^ \n/\t]*\.sty)")
 
     allowedPackages.extend(additionnalPackages) 
+    allowedPackages.extend(additionalPackagesNotPubliclyListed)
 
     packages = []
 
@@ -68,3 +74,5 @@ if __name__ == "__main__":
 
     if everyThingOK:
         print("Congratulations, everything appears in order.")
+    else:
+        print("Note that the packages listed above can include personal packages that are not a problem as long as they use authorized packages.")
