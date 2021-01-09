@@ -9,7 +9,7 @@ setuptools.setup(
      scripts=['checkTAPSpackages'] ,
      author="Géry Casiez",
      author_email="gery.casiez@univ-lille.fr",
-     description="Allows to check a document complies with the list of LaTeX packages accepted by TAPS.",
+     description="Checks if a document complies with the list of LaTeX packages allowed by TAPS.",
      long_description=long_description,
 
      long_description_content_type="text/markdown",
