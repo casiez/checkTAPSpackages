@@ -7,3 +7,5 @@ Install using ```pip install checkTAPSpackages```
 1. Compile your document by adding ```\listfiles``` below ```\documentclass```
 1. Run ```checkTAPSpackages yourGeneratedLogFile.log```
 
+Use ```--all``` option to show all packages used.
+

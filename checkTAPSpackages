@@ -37,11 +37,22 @@ additionnalPackages = ['xkeyval.sty', 'xstring.sty', 'iftex.sty', 'microtype.sty
 
 additionalPackagesNotPubliclyListed = ['xspace.sty', 'enumitem.sty'] 
 
+def displayPackages(packages, showAll = False):
+    packages = sorted(packages, key = lambda i: i['package'])
+
+    for p in packages:
+        if p['supported']:
+            if showAll:
+                print("{:<20} => ok".format(p['package']))
+        else:
+            print("{:<20} => NOT SUPPORTED".format(p['package']))
+
 
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Check used packages')
     parser.add_argument('logfile', help = 'latex log file')
+    parser.add_argument('--all', help = 'shows all packages', action="store_true")
     args = parser.parse_args()
 
     print("You must first compile you tex document by adding \\listfiles below the \\documentclass")
@@ -66,13 +77,17 @@ if __name__ == "__main__":
             packages.append(package)
 
     everyThingOK = True
+    allpackages = []
 
     for p in packages:
         if p not in allowedPackages:
             everyThingOK = False
-            print("Warning: %s is not allowed"%p)
+            allpackages.append({'package': p, 'supported': False})
+        else:
+            allpackages.append({'package': p, 'supported': True})
 
     if everyThingOK:
         print("Congratulations, everything appears in order.")
     else:
+        displayPackages(allpackages, args.all)
         print("Note that the packages listed above can include personal packages that are not a problem as long as they use authorized packages.")
