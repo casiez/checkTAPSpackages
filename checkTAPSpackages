@@ -47,6 +47,22 @@ def displayPackages(packages, showAll = False):
         else:
             print("{:<20} => NOT SUPPORTED".format(p['package']))
 
+def getStyFilesFromLog(file):
+    packages = []
+    try:
+        f = open(file, "r")
+    except:
+        print("File does not exist")
+        sys.exit(-1)
+
+    text = f.read()
+
+    pattern = re.compile(r"([^ \n/\t]*\.sty)")
+
+    for package in re.findall(pattern, text):
+        if package not in packages:
+            packages.append(package)
+    return packages
 
 if __name__ == "__main__":
 
@@ -57,24 +73,10 @@ if __name__ == "__main__":
 
     print("You must first compile you tex document by adding \\listfiles below the \\documentclass")
 
-    try:
-        f = open(args.logfile, "r")
-    except:
-        print("File does not exist")
-        sys.exit(-1)
-
-    text = f.read()
-
-    pattern = re.compile(r"([^ \n/\t]*\.sty)")
-
     allowedPackages.extend(additionnalPackages) 
     allowedPackages.extend(additionalPackagesNotPubliclyListed)
 
-    packages = []
-
-    for package in re.findall(pattern, text):
-        if package not in packages:
-            packages.append(package)
+    packages = getStyFilesFromLog(args.logfile)
 
     everyThingOK = True
     allpackages = []
