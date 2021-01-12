@@ -4,8 +4,12 @@
 # Jan 2021
 
 import re
-import argparse
 import sys
+import os
+from subprocess import DEVNULL, STDOUT, check_call
+import shutil
+import argparse
+from tqdm import tqdm
 
 # packages listed here: https://www.acm.org/publications/taps/accepted-latex-packages 
 
@@ -33,26 +37,36 @@ additionnalPackages = ['xkeyval.sty', 'xstring.sty', 'iftex.sty', 'microtype.sty
      'ifluatex.sty', 'trig.sty', 'xcolor.sty', 'ifvtex.sty', 'manyfoot.sty', 'nccfoots.sty', 'ifxetex.sty', 'fontaxes.sty', 'caption3.sty', \
      'comment.sty', 'nameref.sty', 'epstopdf-base.sty', 'upquote.sty', 'gettitlestring.sty']
 
-# Additional packages, not listed above but authorized following discussion with ACM by e-mail
+# Additional packages, not listed above but authorized following discussions with ACM by e-mail
 
 additionalPackagesNotPubliclyListed = ['xspace.sty', 'enumitem.sty'] 
 
-def displayPackages(packages, showAll = False):
-    packages = sorted(packages, key = lambda i: i['package'])
+def findIndex(listOfDict, key, val):
+    return next((index for (index, d) in enumerate(listOfDict) if d[key] == val), None)
+
+def displayPackages(packages, permittedPackages, showAll = False, showSubpackages = False):
+    packages = sorted(packages, key = lambda i: i['name'])
 
     for p in packages:
         if p['supported']:
             if showAll:
-                print("{:<20} => ok".format(p['package']))
+                print("{:<20} => ok".format(p['name']))
         else:
-            print("{:<20} => NOT SUPPORTED".format(p['package']))
+            print("{:<20} => NOT SUPPORTED".format(p['name']))
+
+        if showSubpackages and len(p['subpackages']) > 0:
+            for sp in p['subpackages']:
+                if sp not in permittedPackages:
+                    print("   {:<20} => NOT SUPPORTED".format(sp))
+                elif showAll:
+                    print("   {:<20} => ok".format(sp))
 
 def getStyFilesFromLog(file):
     packages = []
     try:
         f = open(file, "r")
     except:
-        print("File does not exist")
+        print("File %s does not exist"%file)
         sys.exit(-1)
 
     text = f.read()
@@ -69,6 +83,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Check used packages')
     parser.add_argument('logfile', help = 'latex log file')
     parser.add_argument('--all', help = 'shows all packages', action="store_true")
+    parser.add_argument('--expand', help = 'shows packages used by a package', action="store_true")
     args = parser.parse_args()
 
     print("You must first compile you tex document by adding \\listfiles below the \\documentclass")
@@ -84,12 +99,37 @@ if __name__ == "__main__":
     for p in packages:
         if p not in allowedPackages:
             everyThingOK = False
-            allpackages.append({'package': p, 'supported': False})
+            allpackages.append({'name': p, 'supported': False, 'subpackages': []})
         else:
-            allpackages.append({'package': p, 'supported': True})
+            allpackages.append({'name': p, 'supported': True, 'subpackages': []})
+
+    if args.expand:
+        tmpdir = "xzadphrvix"
+        if not os.path.exists(tmpdir):
+            os.mkdir(tmpdir)
+        
+        for p in tqdm(allpackages):
+            f = open(os.path.join(tmpdir, "test.tex"), "w")
+            f.write("""\\documentclass{article} \\listfiles \\usepackage{%s} \\begin{document} \\end{document}"""%p['name'][:-4])
+            f.close()
+
+            try:
+                check_call(['pdflatex', '-output-directory', tmpdir, '-interaction', 'nonstopmode', '%s/test.tex'%tmpdir], stdout=DEVNULL, stderr=STDOUT)
+            except:
+                next
+
+            usedpackages = getStyFilesFromLog(os.path.join(tmpdir, "test.log"))
+            if p['name'] in usedpackages:
+                usedpackages.remove(p['name'])
+            index = findIndex(allpackages, 'name', p['name'])
+            allpackages[index]['subpackages'].extend(usedpackages)
+
+        shutil.rmtree(tmpdir)
+
 
     if everyThingOK:
         print("Congratulations, everything appears in order.")
     else:
-        displayPackages(allpackages, args.all)
+        displayPackages(allpackages, allowedPackages, args.all, args.expand)
         print("Note that the packages listed above can include personal packages that are not a problem as long as they use authorized packages.")
+
