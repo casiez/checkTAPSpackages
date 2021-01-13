@@ -104,27 +104,24 @@ if __name__ == "__main__":
             allpackages.append({'name': p, 'supported': True, 'subpackages': []})
 
     if args.expand:
-        tmpdir = "xzadphrvix"
-        if not os.path.exists(tmpdir):
-            os.mkdir(tmpdir)
+        tmpfile = "xzadphrvix"
         
         for p in tqdm(allpackages):
-            f = open(os.path.join(tmpdir, "test.tex"), "w")
+            f = open("%s.tex"%tmpfile, "w")
             f.write("""\\documentclass{article} \\listfiles \\usepackage{%s} \\begin{document} \\end{document}"""%p['name'][:-4])
             f.close()
 
             try:
-                check_call(['pdflatex', '-output-directory', tmpdir, '-interaction', 'nonstopmode', '%s/test.tex'%tmpdir], stdout=DEVNULL, stderr=STDOUT)
+                check_call(['pdflatex', '-interaction', 'nonstopmode', "%s.tex"%tmpfile], stdout=DEVNULL, stderr=STDOUT)
             except:
+                print("Some troubles finding packages in %s (some additional packages may be required to use it)"%p['name'])
                 next
 
-            usedpackages = getStyFilesFromLog(os.path.join(tmpdir, "test.log"))
+            usedpackages = getStyFilesFromLog("%s.log"%tmpfile)
             if p['name'] in usedpackages:
                 usedpackages.remove(p['name'])
             index = findIndex(allpackages, 'name', p['name'])
             allpackages[index]['subpackages'].extend(usedpackages)
-
-        shutil.rmtree(tmpdir)
 
 
     if everyThingOK:
