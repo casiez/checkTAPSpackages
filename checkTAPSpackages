@@ -10,10 +10,12 @@ from subprocess import DEVNULL, STDOUT, check_call
 import shutil
 import argparse
 from tqdm import tqdm
+import urllib.request
 
 # packages listed here: https://www.acm.org/publications/taps/accepted-latex-packages 
 
-allowedPackages = ['amsmath.sty', 'array.sty', 'booktabs.sty', 'caption.sty', 'fancyvrb.sty', 'graphicx.sty', 'hypdoc.sty',\
+allowedPackages = ['amsmath.sty', 'array.sty', 'bbold.sty', 'booktabs.sty', 'caption.sty', 'colortbl.sty', 'enumitem.sty', 'epstopdf.sty',\
+ 'fancyvrb.sty', 'graphicx.sty', 'hypdoc.sty', 'mathtool.sty', 'mathtools.sty', 'microtype.sty', 'rotating.sty', 'subfig.sty',\
  'libertine.sty', 'longtable.sty', 'newtxmath.sty', 'tabularx.sty', 'zi4.sty', 'abstract.sty', 'curves.sty', 'kvoptions.sty',\
  'acronym.sty', 'datenumber.sty', 'listings.sty', 'algorithm.sty', 'dcolumn.sty', 'makeidx.sty', 'algorithm2e.sty', 'decimal.sty', \
  'maple2e.sty', 'algorithmic.sty', 'delarray.sty', 'mapleenv.sty', 'alltt.sty', 'dirtytalk.sty', 'mapleplots.sty', 'amsbsy.sty', \
@@ -26,20 +28,21 @@ allowedPackages = ['amsmath.sty', 'array.sty', 'booktabs.sty', 'caption.sty', 'f
 'soul.sty', 'calc.sty', 'geometry.sty', 'subfigure.sty', 'cancel.sty', 'graphics.sty', 'suffix.sty', 'ccicons.sty', 'graphicx.sty', 'tabular.sty', \
 'centernot.sty', 'graphpap.sty', 'textcase.sty', 'cgloss4e.sty', 'harmony.sty', 'textcomp.sty', 'checkend.sty', 'html.sty', 'tfrupee.sty', 'CJK.sty', \
 'hyperref.sty', 'tipa.sty', 'clean.sty', 'ifpdf.sty', 'tipx.sty', 'cmap.sty', 'ifthen.sty', 'titlepage.sty', 'color.sty', 'index.sty', 'tloop.sty', \
-'comma.sty', 'inputenc.sty', 'totpages.sty', 'coollist.sty', 'iopams.sty', 'trimspaces.sty', 'coolstr.sty', 'keyval.sty', 'units.sty', 'upmath.sty']
+'comma.sty', 'inputenc.sty', 'totpages.sty', 'coollist.sty', 'iopams.sty', 'trimspaces.sty', 'coolstr.sty', 'keyval.sty', 'units.sty', 'upmath.sty',\
+'url.sty', 'breakurl.sty', 'verbatim.sty', 'wrapfig.sty', 'xcolor.sty', 'xspace.sty']
 
 # Packages not listed above but imported by some packages listed above
 
-additionnalPackages = ['xkeyval.sty', 'xstring.sty', 'iftex.sty', 'microtype.sty', 'etoolbox.sty', 'refcount.sty', 'ltxcmds.sty', \
+additionnalPackages = ['xkeyval.sty', 'xstring.sty', 'iftex.sty', 'etoolbox.sty', 'refcount.sty', 'ltxcmds.sty', \
      'infwarerr.sty', 'everyshi-ltx.sty', 'environ.sty', 'pdftexcmds.sty', 'kvsetkeys.sty', 'kvdefinekeys.sty', 'pdfescape.sty', \
-     'hycolor.sty', 'letltxmacro.sty', 'intcalc.sty', 'etexcmds.sty', 'url.sty', 'bitset.sty', 'bigintcalc.sty', 'atbegshi-ltx.sty', \
+     'hycolor.sty', 'letltxmacro.sty', 'intcalc.sty', 'etexcmds.sty', 'bitset.sty', 'bigintcalc.sty', 'atbegshi-ltx.sty', \
      'atveryend-ltx.sty', 'rerunfilecheck.sty', 'uniquecounter.sty', 'hyperxmp.sty', 'stringenc.sty', 'ifmtarg.sty', 'ifdraft.sty', \
-     'ifluatex.sty', 'trig.sty', 'xcolor.sty', 'ifvtex.sty', 'manyfoot.sty', 'nccfoots.sty', 'ifxetex.sty', 'fontaxes.sty', 'caption3.sty', \
-     'comment.sty', 'nameref.sty', 'epstopdf-base.sty', 'upquote.sty', 'gettitlestring.sty']
+     'ifluatex.sty', 'trig.sty', 'ifvtex.sty', 'manyfoot.sty', 'nccfoots.sty', 'ifxetex.sty', 'fontaxes.sty', 'caption3.sty', \
+     'comment.sty', 'nameref.sty', 'epstopdf-base.sty', 'upquote.sty', 'gettitlestring.sty', 'everyshi.sty', 'setspace.sty']
 
 # Additional packages, not listed above but authorized following discussions with ACM by e-mail
 
-additionalPackagesNotPubliclyListed = ['xspace.sty', 'enumitem.sty'] 
+additionalPackagesNotPubliclyListed = [] 
 
 def findIndex(listOfDict, key, val):
     return next((index for (index, d) in enumerate(listOfDict) if d[key] == val), None)
@@ -78,13 +81,49 @@ def getStyFilesFromLog(file):
             packages.append(package)
     return packages
 
+def getPackagesOfficallySupported():
+    res = []
+    fp = urllib.request.urlopen("https://www.acm.org/publications/taps/accepted-latex-packages")
+    s = fp.read().decode("utf8")
+    fp.close()
+    s2 = s.replace('<br />', ' ').replace('\n', '')
+    packages = re.findall(r"<p style=\"margin-left: 40px;\">([^<]*)",s2)
+    for g in packages:
+        packs = re.split(" |/",g)
+        for p in packs:
+            res.append("%s.sty"%p)
+    res += ['amsmath.sty', 'array.sty', 'booktabs.sty', 'caption.sty', 'fancyvrb.sty', 'graphicx.sty',\
+          'hypdoc.sty', 'libertine.sty', 'longtable.sty', 'newtxmath.sty', 'tabularx.sty', 'zi4.sty']
+
+    return res
+
+def diff():
+    official = getPackagesOfficallySupported()
+    new = []
+    for p in official:
+        if p not in allowedPackages:
+            new.append(p)
+    print("New packages supported: %s"%new)
+
+    deleted = []
+    for p in allowedPackages:
+        if p not in official:
+            deleted.append(p)
+    print("Packages no longer supported: %s"%deleted)
+
+
 if __name__ == "__main__":
 
     parser = argparse.ArgumentParser(description='Check used packages')
     parser.add_argument('logfile', help = 'latex log file')
     parser.add_argument('--all', help = 'shows all packages', action="store_true")
     parser.add_argument('--expand', help = 'shows packages used by a package', action="store_true")
+    parser.add_argument('--diff', help = 'shows packages newly supported or no longer supported from TAPS', action="store_true")
     args = parser.parse_args()
+
+    if args.diff:
+        diff()
+        sys.exit(0)
 
     print("You must first compile you tex document by adding \\listfiles below the \\documentclass")
 
