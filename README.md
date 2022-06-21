@@ -4,7 +4,7 @@ Gets all packages used in a LaTeX document and checks they are in the [list of p
 
 Tested on macOS, should work on Linux, could work on Windows.
 
-Install using ```pip install checkTAPSpackages```
+Install using ```pip install -U checkTAPSpackages```
 
 1. Compile your document by adding ```\listfiles``` below ```\documentclass```
 1. Run ```checkTAPSpackages yourGeneratedLogFile.log```
@@ -35,3 +35,4 @@ ulem.sty             => NOT SUPPORTED
 wasysym.sty          => NOT SUPPORTED
 ```
 
+Use ```--diff``` option to list newly supported or not supported packages.
