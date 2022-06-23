@@ -42,7 +42,7 @@ additionnalPackages = ['xkeyval.sty', 'xstring.sty', 'iftex.sty', 'etoolbox.sty'
 
 # Additional packages, not listed above but authorized following discussions with ACM by e-mail
 
-additionalPackagesNotPubliclyListed = ['eurosym.sty', 'silence.sty'] 
+additionalPackagesNotPubliclyListed = ['eurosym.sty', 'silence.sty', 'siunitx.sty'] 
 
 def findIndex(listOfDict, key, val):
     return next((index for (index, d) in enumerate(listOfDict) if d[key] == val), None)
