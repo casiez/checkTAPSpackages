@@ -1,3 +1,6 @@
+[![PyPI Version](https://img.shields.io/pypi/v/checkTAPSpackages)](https://pypi.org/project/checkTAPSpackages/)
+[![License](https://img.shields.io/github/license/casiez/checkTAPSpackages)](LICENSE)
+
 # checkTAPSpackages
 
 Gets all packages used in a LaTeX document and checks they are in the [list of packages allowed by TAPS](https://www.acm.org/publications/taps/accepted-latex-packages)
