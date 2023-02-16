@@ -67,7 +67,7 @@ def displayPackages(packages, permittedPackages, showAll = False, showSubpackage
 def getStyFilesFromLog(file):
     packages = []
     try:
-        f = open(file, "r")
+        f = open(file, "r", encoding = "utf-8")
     except:
         print("File %s does not exist"%file)
         sys.exit(-1)

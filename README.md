@@ -35,4 +35,4 @@ ulem.sty             => NOT SUPPORTED
 wasysym.sty          => NOT SUPPORTED
 ```
 
-Use ```--diff``` option to list newly supported or not supported packages.
+Use ```--diff``` option to list newly supported or no longer supported packages.
