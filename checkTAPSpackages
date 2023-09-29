@@ -29,7 +29,7 @@ allowedPackages = ['amsmath.sty', 'array.sty', 'bbold.sty', 'booktabs.sty', 'cap
 'centernot.sty', 'graphpap.sty', 'textcase.sty', 'cgloss4e.sty', 'harmony.sty', 'textcomp.sty', 'checkend.sty', 'html.sty', 'tfrupee.sty', 'CJK.sty', \
 'hyperref.sty', 'tipa.sty', 'clean.sty', 'ifpdf.sty', 'tipx.sty', 'cmap.sty', 'ifthen.sty', 'titlepage.sty', 'color.sty', 'index.sty', 'tloop.sty', \
 'comma.sty', 'inputenc.sty', 'totpages.sty', 'coollist.sty', 'iopams.sty', 'trimspaces.sty', 'coolstr.sty', 'keyval.sty', 'units.sty', 'upmath.sty',\
-'url.sty', 'breakurl.sty', 'verbatim.sty', 'wrapfig.sty', 'xcolor.sty', 'xspace.sty', 'subcaption.sty', 'pifont.sty']
+'url.sty', 'breakurl.sty', 'verbatim.sty', 'wrapfig.sty', 'xcolor.sty', 'xspace.sty', 'subcaption.sty', 'pifont.sty', 'changes.sty', 'cleveref.sty', 'crossreftools.sty', 'fontawesome.sty', 'fontawesome5.sty', 'framed.sty', 'glossaries.sty', 'lscape.sty', 'makecell.sty', 'mathptmx.sty', 'nicefrac.sty', 'setspace.sty', 'siunitx.sty', 'textgreek.sty', 'xfrac.sty']
 
 # Packages not listed above but imported by some packages listed above
 
@@ -42,7 +42,7 @@ additionnalPackages = ['xkeyval.sty', 'xstring.sty', 'iftex.sty', 'etoolbox.sty'
 
 # Additional packages, not listed above but authorized following discussions with ACM by e-mail
 
-additionalPackagesNotPubliclyListed = ['eurosym.sty', 'silence.sty', 'siunitx.sty'] 
+additionalPackagesNotPubliclyListed = ['eurosym.sty', 'silence.sty'] 
 
 def findIndex(listOfDict, key, val):
     return next((index for (index, d) in enumerate(listOfDict) if d[key] == val), None)
@@ -67,7 +67,7 @@ def displayPackages(packages, permittedPackages, showAll = False, showSubpackage
 def getStyFilesFromLog(file):
     packages = []
     try:
-        f = open(file, "r", encoding = "utf-8")
+        f = open(file, "r", encoding = "ISO-8859-1")
     except:
         print("File %s does not exist"%file)
         sys.exit(-1)
