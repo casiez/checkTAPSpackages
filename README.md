@@ -1,5 +1,6 @@
 [![PyPI Version](https://img.shields.io/pypi/v/checkTAPSpackages)](https://pypi.org/project/checkTAPSpackages/)
 [![License](https://img.shields.io/github/license/casiez/checkTAPSpackages)](LICENSE)
+[![Downloads](https://static.pepy.tech/badge/checkTAPSpackages)](https://pepy.tech/project/checkTAPSpackages)
 
 # checkTAPSpackages
 
